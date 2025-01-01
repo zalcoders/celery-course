@@ -1,5 +1,5 @@
 from flask import Flask
-from tasks import send_otp
+from background_jobs.tasks import send_otp
 
 app = Flask(__name__)
 

@@ -1,9 +1,6 @@
-from celery import Celery
 import time
+from background_jobs.celery import app
 
-app = Celery("tasks", backend="redis://localhost:6379/0")
-
-app.conf.broker_url = "redis://localhost:6379/0"
 
 @app.task
 def send_otp(phone_no, otp):

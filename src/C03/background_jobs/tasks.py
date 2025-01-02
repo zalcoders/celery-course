@@ -1,4 +1,5 @@
 from time import sleep
+from random import randint
 
 from background_jobs.celery import app
 from celery.schedules import crontab
@@ -13,3 +14,10 @@ def setup_periodic_tasks(sender, **kwargs):
 def ping(wait_time):
     sleep(wait_time)
     return "pong"
+
+@app.task
+def random_failure(percentage):
+    if randint(0, 100) < percentage:
+        raise Exception("Random Exception")
+    else:
+        return True

@@ -1,2 +1,0 @@
-Flask==3.1.0
-"Celery[redis]==5.4.0"

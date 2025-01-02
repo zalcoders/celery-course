@@ -1,7 +1,0 @@
-services:
-  redis:
-    image: redis
-    container_name: redis_celey_course
-    ports:
-      - "6379:6379"
-    restart: always

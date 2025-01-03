@@ -29,12 +29,32 @@ class DumpCam(Polaroid):
         print(f"{failed_tasks / len(state.tasks) * 100}% Of tasks failed")
 
 
-def main(app, freq=1.0):
+def monitor_snapshots(app, freq=1.0):
     state = app.events.State()
     with app.connection() as connection:
         recv = app.events.Receiver(connection, handlers={'*': state.event})
         with DumpCam(state, freq=freq):
             recv.capture(limit=None, timeout=None)
 
+def realtime_monitoring(app):
+    state = app.events.State()
+
+    def announce_failed_tasks(event):
+        state.event(event)
+        # task name is sent only with -received event, and state
+        # will keep track of this for us.
+        task = state.tasks.get(event['uuid'])
+
+        print('TASK FAILED: %s[%s] %s' % (
+            task.name, task.uuid, task.info(),))
+
+    with app.connection() as connection:
+        recv = app.events.Receiver(connection, handlers={
+                'task-failed': announce_failed_tasks,
+                '*': state.event,
+        })
+        recv.capture(limit=None, timeout=None, wakeup=True)
+
 if __name__ == '__main__':
-    main(app, 10)
+    # monitor_snapshots(app, 10)
+    realtime_monitoring(app)
